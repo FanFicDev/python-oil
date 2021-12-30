@@ -17,6 +17,7 @@ class OilConnectionParameters:
 				'port': None,
 		}
 		self.autocommit = True
+		self.conn: Optional['psycopg2.connection'] = None
 
 	def __repr__(self) -> str:
 		"""Convert ourselves into a form useful for passing to a postgres lib."""
@@ -26,11 +27,15 @@ class OilConnectionParameters:
 
 	def open(self) -> 'psycopg2.connection':
 		"""Open and return a connection to the database described by our parms."""
+		if self.conn is not None and self.conn.closed:
+			self.conn = None
+		if self.conn is not None:
+			return self.conn
 		import psycopg2
-		conn = psycopg2.connect(self.__repr__())
+		self.conn = psycopg2.connect(self.__repr__())
 		if self.autocommit:
-			conn.autocommit = True
-		return conn
+			self.conn.autocommit = True
+		return self.conn
 
 	@staticmethod
 	def fromEnvironment() -> 'OilConnectionParameters':
