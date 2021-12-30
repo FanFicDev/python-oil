@@ -21,7 +21,7 @@ class OilConnectionParameters:
 		"""Convert ourselves into a form useful for passing to a postgres lib."""
 		return ' '.join([
 				f"{k}={v}" for k, v in self.parts.items() if v is not None
-		])
+		]) + ' sslmode=require' if self.parts['host'] is not None else ''
 
 	def open(self) -> 'psycopg2.connection':
 		"""Open and return a connection to the database described by our parms."""
