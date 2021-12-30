@@ -7,7 +7,7 @@ import datetime
 import threading
 from typing import Union
 import dateutil.parser
-import PyQt5.QtCore
+import zlib
 
 defaultLogFile = 'oil.log'
 defaultLogDir = './'
@@ -127,9 +127,7 @@ def getFuzz(base: float = 1.0, spread: float = 0.2) -> float:
 
 def compress(data: bytes) -> bytes:
 	"""Return a compressed copy of data."""
-	qba = PyQt5.QtCore.QByteArray(data)
-	res = PyQt5.QtCore.qCompress(qba, 9)
-	return res.data()
+	return len(data).to_bytes(4, byteorder='big') + zlib.compress(data, level=9)
 
 def uncompress(data: bytes) -> bytes:
 	"""Return an uncompressed copy of `data`.
@@ -137,9 +135,11 @@ def uncompress(data: bytes) -> bytes:
 	`data` must be the result of an earlier `compress` call though not necessarily
 	from within the same process.
 	"""
-	qba = PyQt5.QtCore.QByteArray(data)
-	res = PyQt5.QtCore.qUncompress(qba)
-	return res.data()
+	elen = int.from_bytes(data[:4], byteorder='big')
+	res = zlib.decompress(data[4:])
+	if len(res) != elen:
+		raise Exception(f'expected {elen} but got {len(res)} bytes')
+	return res
 
 def getUniqueJobName(extra: str = 'job', bits: int = 32) -> str:
 	"""Return a machine-local unique job id."""
