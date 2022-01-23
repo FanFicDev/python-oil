@@ -1,11 +1,11 @@
 """Grab bag of various utility functions."""
+from typing import Optional, Union
 import os
 import re
 import time
 import random
 import datetime
 import threading
-from typing import Union
 import dateutil.parser
 import zlib
 
@@ -101,7 +101,7 @@ def parseDateAsUnix(updated: Union[str, int], fetched: int) -> int:
 	logMessage('error parsing date: {}'.format(updated))
 	raise Exception('error parsing date: {}'.format(updated))
 
-def logMessage(msg: str, fname: str = None, logDir: str = None) -> None:
+def logMessage(msg: str, fname: Optional[str] = None, logDir: Optional[str] = None) -> None:
 	"""Write a given `msg` to the log file `fname` within `logDir`."""
 	if fname is None:
 		fname = defaultLogFile
