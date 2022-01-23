@@ -1,12 +1,25 @@
 requirements_in := $(wildcard requirements/*.in)
 requirements := $(patsubst %.in,%.txt,$(requirements_in))
 
-default: lint build
+default: lint test tox build
+
+tox: venv/
+	./venv/bin/tox
+
+tox-lint: venv/
+	./venv/bin/tox run -e type
+	./venv/bin/tox run -e lint
+
+test-setup:
+	./venv/bin/python -m pip install -e .
+
+test: venv/
+	./venv/bin/pytest --cov=oil --cov-report html --cov-branch -vv
 
 lint: venv/
-	./venv/bin/mypy src/
-	./venv/bin/ruff format src/
-	./venv/bin/ruff check src/
+	./venv/bin/mypy src/ tests/
+	./venv/bin/ruff format src/ tests/
+	./venv/bin/ruff check src/ tests/
 
 build: venv/ requires setup.cfg lint
 	./venv/bin/python -m build
@@ -36,5 +49,5 @@ clean:
 spotless: clean
 	rm -fr venv/ dist/ src/*.egg-info/
 
-.PHONY: requires clean spotless build lint
+.PHONY: requires clean spotless build lint test-setup test tox tox-lint
 

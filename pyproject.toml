@@ -51,3 +51,36 @@ extend-select = [
 	"SIM", # flake8-simplify
 	"I",   # isort
 ]
+
+[tool.pytest.ini_options]
+addopts = [
+	"--import-mode=importlib",
+]
+
+[tool.tox]
+legacy_tox_ini = """
+[tox]
+isolated_build = True
+env_list =
+  type, lint, py3.{11,10,9}
+skip_missing_interpreters = true
+
+[testenv]
+deps =
+  -r requirements/tests.txt
+commands = pytest -v --tb=short --basetemp={envtmpdir} {posargs}
+
+[testenv:type]
+skip_install = true
+deps =
+  -r requirements/typing.txt
+commands = mypy {posargs:src tests}
+
+[testenv:lint]
+skip_install = true
+deps =
+  -r requirements/dev.txt
+commands =
+  ruff format {posargs:src tests}
+  ruff check {posargs:src tests}
+"""
