@@ -2,7 +2,7 @@
 from typing import TYPE_CHECKING, Dict, Optional
 
 if TYPE_CHECKING:
-    import psycopg2
+    from psycopg2 import connection  # type: ignore[attr-defined]
 
 
 class OilConnectionParameters:
@@ -20,7 +20,7 @@ class OilConnectionParameters:
             "port": None,
         }
         self.autocommit = True
-        self.conn: Optional["psycopg2.connection"] = None
+        self.conn: Optional["connection"] = None
 
     def __repr__(self) -> str:
         """Convert ourselves into a form useful for passing to a postgres lib."""
@@ -28,7 +28,7 @@ class OilConnectionParameters:
             [f"{k}={v}" for k, v in self.parts.items() if v is not None]
         ) + (" sslmode=require" if self.parts["host"] is not None else "")
 
-    def open(self) -> "psycopg2.connection":
+    def open(self) -> "connection":
         """Open and return a connection to the database described by our parms."""
         if self.conn is not None and self.conn.closed:
             self.conn = None

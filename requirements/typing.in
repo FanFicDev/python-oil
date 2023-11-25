@@ -1,5 +1,5 @@
 mypy
+types-psycopg2
 types-python-dateutil
 types-requests
-git+https://github.com/FanFicDev/python-typeshed.git@v0.0.1
 pytest
