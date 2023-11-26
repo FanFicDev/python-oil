@@ -20,7 +20,7 @@ def urlTitle(title: str) -> str:
     for char in title:
         if char.isalnum():
             res += char
-        elif len(res) == 0 or res[-1] != "-":
+        elif len(res) != 0 and res[-1] != "-":
             res += "-"
     return res.rstrip("-")
 
