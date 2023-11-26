@@ -5,6 +5,8 @@ default: lint build
 
 lint: venv/
 	./venv/bin/mypy src/
+	./venv/bin/ruff format src/
+	./venv/bin/ruff check src/
 
 build: venv/ requires setup.cfg lint
 	./venv/bin/python -m build
