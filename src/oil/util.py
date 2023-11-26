@@ -25,11 +25,6 @@ def urlTitle(title: str) -> str:
     return res.rstrip("-")
 
 
-def dtToUnix(dt: datetime.datetime) -> int:
-    """Convert a `datetime.datetime` `dt` a unix timestamp."""
-    return int(dt.strftime("%s"))
-
-
 _writtenMonths = [
     "January",
     "February",
@@ -74,11 +69,13 @@ def parseDateAsUnix(updated: Union[str, int], fetched: int) -> int:
     currentYear = datetime.datetime.utcfromtimestamp(fetched).year
 
     if isinstance(updated, int):
+        if updated < 0:
+            raise Exception(f"error parsing date: negative int: {updated}")
         return updated
-    if isinstance(updated, str):
-        updated = updated.strip()
 
-    if re.match(r"^\d+$", updated):
+    updated = updated.strip()
+
+    if updated.isnumeric():
         return int(updated)
 
     if updated.endswith("ago"):
@@ -96,18 +93,18 @@ def parseDateAsUnix(updated: Union[str, int], fetched: int) -> int:
     if len(slashedParts) == 2:
         fdate = f"{currentYear}/{slashedParts[0]}/{slashedParts[1]}"
         dt = dateutil.parser.parse(fdate)
-        uts = dtToUnix(dt)
-        return uts
+        dt = dt.replace(tzinfo=datetime.timezone.utc)
+        return int(dt.timestamp())
     if len(slashedParts) == 3:
         dt = dateutil.parser.parse(updated)
-        uts = dtToUnix(dt)
-        return uts
+        dt = dt.replace(tzinfo=datetime.timezone.utc)
+        return int(dt.timestamp())
 
     dashedParts = updated.split("-")
     if len(dashedParts) == 3:
         dt = dateutil.parser.parse(updated)
-        uts = dtToUnix(dt)
-        return uts
+        dt = dt.replace(tzinfo=datetime.timezone.utc)
+        return int(dt.timestamp())
 
     dottedParts = updated.split(".")
     if (
@@ -117,16 +114,15 @@ def parseDateAsUnix(updated: Union[str, int], fetched: int) -> int:
         and dottedParts[2].isnumeric()
     ):
         dt = dateutil.parser.parse(updated)
-        uts = dtToUnix(dt)
-        return uts
+        dt = dt.replace(tzinfo=datetime.timezone.utc)
+        return int(dt.timestamp())
 
     if isWrittenDate(updated):
         dt = dateutil.parser.parse(updated)
-        uts = dtToUnix(dt)
-        return uts
+        dt = dt.replace(tzinfo=datetime.timezone.utc)
+        return int(dt.timestamp())
 
-    logMessage(f"error parsing date: {updated}")
-    raise Exception(f"error parsing date: {updated}")
+    raise Exception(f"error parsing date: unknown format: {updated}")
 
 
 def logMessage(
