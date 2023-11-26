@@ -24,12 +24,9 @@ class OilConnectionParameters:
 
     def __repr__(self) -> str:
         """Convert ourselves into a form useful for passing to a postgres lib."""
-        return (
-            " ".join([f"{k}={v}" for k, v in self.parts.items() if v is not None])
-            + " sslmode=require"
-            if self.parts["host"] is not None
-            else ""
-        )
+        return " ".join(
+            [f"{k}={v}" for k, v in self.parts.items() if v is not None]
+        ) + (" sslmode=require" if self.parts["host"] is not None else "")
 
     def open(self) -> "psycopg2.connection":
         """Open and return a connection to the database described by our parms."""
@@ -39,7 +36,7 @@ class OilConnectionParameters:
             return self.conn
         import psycopg2
 
-        self.conn = psycopg2.connect(self.__repr__())
+        self.conn = psycopg2.connect(repr(self))
         if self.autocommit:
             self.conn.autocommit = True
         return self.conn
