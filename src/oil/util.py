@@ -5,6 +5,7 @@ import random
 import re
 import threading
 import time
+import warnings
 import zlib
 from typing import Optional, Union
 
@@ -129,6 +130,7 @@ def logMessage(
     msg: str, fname: Optional[str] = None, logDir: Optional[str] = None
 ) -> None:
     """Write a given `msg` to the log file `fname` within `logDir`."""
+    warnings.warn("Use logging instead", DeprecationWarning, stacklevel=1)
     if fname is None:
         fname = defaultLogFile
     if logDir is None:

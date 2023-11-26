@@ -1,7 +1,8 @@
 import os
+import warnings
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional
+from typing import Callable, Optional
 
 import oil.util as util
 import pytest
@@ -116,20 +117,26 @@ def test_logMessage(tmp_path: Path) -> None:
         with open("./oil.log") as f:
             return f.read()
 
-    util.logMessage("foo")
-    assert content() == "123|foo\n"
+    def test(f: Callable[[], None], expected: str) -> None:
+        with warnings.catch_warnings(record=True) as w:
+            f()
+            assert content() == expected
 
-    util.logMessage("bar", fname="oil.log")
-    assert content() == "123|foo\n123|bar\n"
+            assert len(w) == 1
+            assert issubclass(w[-1].category, DeprecationWarning)
+            assert "logging" in str(w[-1].message)
 
-    util.logMessage("baz", logDir="./")
-    assert content() == "123|foo\n123|bar\n123|baz\n"
-
-    util.logMessage("quux", fname="oil.log", logDir="./")
-    assert content() == "123|foo\n123|bar\n123|baz\n123|quux\n"
-
-    util.logMessage("quiz\n")
-    assert content() == "123|foo\n123|bar\n123|baz\n123|quux\n123|quiz\n"
+    test(lambda: util.logMessage("foo"), "123|foo\n")
+    test(lambda: util.logMessage("bar\n", fname="oil.log"), "123|foo\n123|bar\n")
+    test(lambda: util.logMessage("baz", logDir="./"), "123|foo\n123|bar\n123|baz\n")
+    test(
+        lambda: util.logMessage("quux", fname="oil.log", logDir="./"),
+        "123|foo\n123|bar\n123|baz\n123|quux\n",
+    )
+    test(
+        lambda: util.logMessage("quiz\n"),
+        "123|foo\n123|bar\n123|baz\n123|quux\n123|quiz\n",
+    )
 
 
 def test_lookupRemoteIP_success() -> None:
