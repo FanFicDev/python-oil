@@ -1,12 +1,13 @@
 import os
 import warnings
+from collections.abc import Callable
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Callable, Optional
 
-import oil.util as util
 import pytest
 import requests
+
+import oil.util as util
 
 
 @dataclass
@@ -140,7 +141,7 @@ def test_logMessage(tmp_path: Path) -> None:
 
 
 def test_lookupRemoteIP_success() -> None:
-    def mock_get_success(url: str, timeout: Optional[int] = None) -> Response:
+    def mock_get_success(url: str, timeout: int | None = None) -> Response:
         assert timeout is not None
         assert timeout < 10.0
         return Response(text="\nfoo bar\n", status_code=200)
@@ -151,7 +152,7 @@ def test_lookupRemoteIP_success() -> None:
 
 
 def test_lookupRemoteIP_failure() -> None:
-    def mock_get_failure(url: str, timeout: Optional[int] = None) -> Response:
+    def mock_get_failure(url: str, timeout: int | None = None) -> Response:
         assert timeout is not None
         assert timeout < 10.0
         return Response(text="\nuh oh\n", status_code=500)

@@ -1,4 +1,5 @@
 """Grab bag of various utility functions."""
+
 import datetime
 import os
 import random
@@ -7,7 +8,6 @@ import threading
 import time
 import warnings
 import zlib
-from typing import Optional, Union
 
 import dateutil.parser
 
@@ -61,7 +61,7 @@ def isWrittenDate(val: str) -> bool:
     return any(val.find(wm) >= 0 for wm in _writtenMonths)
 
 
-def parseDateAsUnix(updated: Union[str, int], fetched: int) -> int:
+def parseDateAsUnix(updated: str | int, fetched: int) -> int:
     """Parse a human readable date as a unix timestamp.
 
     Several formats are supported including relative dates. If `updated`
@@ -126,9 +126,7 @@ def parseDateAsUnix(updated: Union[str, int], fetched: int) -> int:
     raise Exception(f"error parsing date: unknown format: {updated}")
 
 
-def logMessage(
-    msg: str, fname: Optional[str] = None, logDir: Optional[str] = None
-) -> None:
+def logMessage(msg: str, fname: str | None = None, logDir: str | None = None) -> None:
     """Write a given `msg` to the log file `fname` within `logDir`."""
     warnings.warn("Use logging instead", DeprecationWarning, stacklevel=1)
     if fname is None:

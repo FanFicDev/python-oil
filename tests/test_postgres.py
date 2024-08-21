@@ -2,6 +2,7 @@ import os
 from dataclasses import dataclass
 
 import psycopg2
+
 from oil.db import OilConnectionParameters
 
 

@@ -1,14 +1,51 @@
-[build-system]
-requires = [
-	"setuptools>=42",
-	"wheel"
+[project]
+name = "oil"
+version = "0.0.2"
+description = "oil is a utility library."
+readme = { file = "README", content-type = "text/markdown" }
+
+authors = [
+	{ name = "iris", email = "iris@serv.pink" },
 ]
-build-backend = "setuptools.build_meta"
+
+requires-python = ">=3.10"
+dependencies = [
+	"psycopg2",
+	"python-dateutil",
+	"requests",
+]
+
+classifiers = [
+	"Programming Language :: Python :: 3",
+	"Operating System :: OS Independent",
+]
+
+[project.urls]
+Homepage = "https://github.com/FanFicDev/python-oil"
+"Bug Tracker" = "https://github.com/FanFicDev/python-oil/issues"
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
+
+[tool.uv]
+dev-dependencies = [
+	"hatch",
+	"mypy",
+	"pytest",
+	"pytest-cov",
+	"ruff",
+	"tox",
+	"tox-uv",
+	"types-psycopg2",
+	"types-python-dateutil",
+	"types-requests",
+]
 
 [tool.mypy]
 follow_imports = "normal"
 ignore_missing_imports = true
-python_version = "3.9"
+python_version = "3.10"
 
 # https://mypy.readthedocs.io/en/stable/config_file.html#disallow-dynamic-typing
 disallow_any_unimported = true
@@ -52,34 +89,23 @@ extend-select = [
 	"I",   # isort
 ]
 
-[tool.pytest.ini_options]
-addopts = [
-	"--import-mode=importlib",
-]
-
 [tool.tox]
 legacy_tox_ini = """
 [tox]
 isolated_build = True
 env_list =
-  type, lint, py3.{11,10,9}
+  type, lint, py3.{12,11,10}
 skip_missing_interpreters = true
 
 [testenv]
-deps =
-  -r requirements/tests.txt
 commands = pytest -v --tb=short --basetemp={envtmpdir} {posargs}
 
 [testenv:type]
 skip_install = true
-deps =
-  -r requirements/typing.txt
 commands = mypy {posargs:src tests}
 
 [testenv:lint]
 skip_install = true
-deps =
-  -r requirements/dev.txt
 commands =
   ruff format {posargs:src tests}
   ruff check {posargs:src tests}

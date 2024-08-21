@@ -1,8 +1,9 @@
 """oil.db.postgres exposes a simple postgres connection factory."""
-from typing import TYPE_CHECKING, Dict, Optional
+
+from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
-    from psycopg2 import connection
+    from psycopg2 import connection  # type: ignore[attr-defined]
 
 
 class OilConnectionParameters:
@@ -12,7 +13,7 @@ class OilConnectionParameters:
     using defaults set in environment variables."""
 
     def __init__(self) -> None:
-        self.parts: Dict[str, Optional[str]] = {
+        self.parts: dict[str, str | None] = {
             "dbname": "minerva",
             "user": None,
             "password": None,
@@ -21,7 +22,7 @@ class OilConnectionParameters:
             "sslmode": None,
         }
         self.autocommit = True
-        self.conn: Optional["connection"] = None
+        self.conn: connection | None = None
 
     def __repr__(self) -> str:
         """Convert ourselves into a form useful for passing to a postgres lib."""

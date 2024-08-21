@@ -1,5 +1,0 @@
-mypy
-types-psycopg2
-types-python-dateutil
-types-requests
-pytest
