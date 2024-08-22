@@ -20,7 +20,7 @@ def mock_connect(s: str) -> Connection:
     return Connection()
 
 
-psycopg2.connect = mock_connect  # type: ignore
+psycopg2.connect = mock_connect  # type: ignore[assignment]
 
 
 class TestOilConnectionParameters:
@@ -77,11 +77,11 @@ class TestOilConnectionParameters:
         assert not c.closed
         assert not c.autocommit
 
-    def test_fromEnvironment(self) -> None:
+    def test_from_environment(self) -> None:
         os.environ.clear()
         os.environ["OIL_DB_DBNAME"] = "foo"
         os.environ["OIL_DB_USER"] = "bar"
-        os.environ["OIL_DB_PASSWORD"] = "baz"
+        os.environ["OIL_DB_PASSWORD"] = "baz"  # noqa: S105
 
-        ocp = OilConnectionParameters.fromEnvironment()
+        ocp = OilConnectionParameters.from_environment()
         assert repr(ocp) == "dbname=foo user=bar password=baz"

@@ -1,18 +1,21 @@
 """oil.db.postgres exposes a simple postgres connection factory."""
 
-from typing import TYPE_CHECKING
+import typing
 
-if TYPE_CHECKING:
+if typing.TYPE_CHECKING:
     from psycopg2 import connection  # type: ignore[attr-defined]
 
 
 class OilConnectionParameters:
-    """Provides a connection to a postgres db.
+    """
+    Provides a connection to a postgres db.
 
     Connection string components are overridable on a per object basis, or by
-    using defaults set in environment variables."""
+    using defaults set in environment variables.
+    """
 
     def __init__(self) -> None:
+        """Construct a default value."""
         self.parts: dict[str, str | None] = {
             "dbname": "minerva",
             "user": None,
@@ -48,17 +51,16 @@ class OilConnectionParameters:
         return self.conn
 
     @staticmethod
-    def fromEnvironment() -> "OilConnectionParameters":
-        """Construct a new set of conneciton paramaters by reading defaults from
-        the environment, if present."""
+    def from_environment() -> "OilConnectionParameters":
+        """Construct by reading defaults from the environment, if present."""
         import os
 
         self = OilConnectionParameters()
         for k in self.parts:
-            envKey = f"OIL_DB_{k}".upper()
-            if envKey in os.environ:
-                self.parts[k] = os.environ[envKey]
+            env_key = f"OIL_DB_{k}".upper()
+            if env_key in os.environ:
+                self.parts[k] = os.environ[env_key]
         return self
 
 
-oil: OilConnectionParameters = OilConnectionParameters.fromEnvironment()
+oil: OilConnectionParameters = OilConnectionParameters.from_environment()
